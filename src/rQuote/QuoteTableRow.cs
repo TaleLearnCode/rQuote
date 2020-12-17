@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace TaleLearnCode.rQuote
+﻿namespace TaleLearnCode.rQuote
 {
 	public class QuoteTableRow
 	{
@@ -12,4 +10,5 @@ namespace TaleLearnCode.rQuote
 		public string Text { get; set; }
 
 	}
+
 }

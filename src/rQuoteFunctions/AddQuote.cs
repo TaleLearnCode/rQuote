@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
 using System.IO;
+using System.Text;
 
 namespace TaleLearnCode.rQuote
 {
@@ -24,16 +25,34 @@ namespace TaleLearnCode.rQuote
 		[FunctionName("AddQuote")]
 		[return: Table("QuoTable", Connection = "TableStorageKey")]
 		public static async System.Threading.Tasks.Task<QuoteTableRow> RunAsync(
-				[HttpTrigger(AuthorizationLevel.Function, "post", Route = null)] HttpRequest request,
+				[HttpTrigger(AuthorizationLevel.Function, "post", Route = "Add/{channelName}")] HttpRequest request,
+				[Blob("quoteids/{channelName}", FileAccess.Read, Connection = "TableStorageKey")] Stream readQuoteId,
+				[Blob("quoteids/{channelName}", FileAccess.Write, Connection = "TableStorageKey")] Stream writeQuoteId,
+				string channelName,
 				ILogger log)
 		{
 			QuoteTableRow quoteTableRow = null;
 			try
 			{
 				string requestBody = await new StreamReader(request.Body).ReadToEndAsync();
-				Quote input = JsonConvert.DeserializeObject<Quote>(requestBody);
+				QuoteInput input = JsonConvert.DeserializeObject<QuoteInput>(requestBody);
 				if (input == null) throw new ArgumentNullException();
-				quoteTableRow = new QuoteTableRow() { PartitionKey = input.ChannelName, RowKey = DateTime.UtcNow.ToString("yyyyMMddHHmmssfffffff"), Text = input.Text };
+
+
+				QuoteId quoteId = JsonConvert.DeserializeObject<QuoteId>(await new StreamReader(readQuoteId).ReadToEndAsync());
+				int newQuoteId = quoteId.MaxId += 1;
+				//int newQuoteId2 = ++quoteId.MaxId;
+
+				quoteTableRow = new QuoteTableRow()
+				{
+					PartitionKey = channelName,
+					RowKey = newQuoteId.ToString(),
+					Text = input.Text
+				};
+
+				quoteId.MaxId = newQuoteId;
+				writeQuoteId.Write(Encoding.ASCII.GetBytes(JsonConvert.SerializeObject(quoteId)));
+
 			}
 			catch (Exception ex)
 			{
@@ -41,7 +60,9 @@ namespace TaleLearnCode.rQuote
 			}
 
 			return quoteTableRow;
+
 		}
+
 
 	}
 
