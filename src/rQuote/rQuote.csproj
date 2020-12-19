@@ -6,4 +6,8 @@
     <RootNamespace>TaleLearnCode.rQuote</RootNamespace>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Azure.Data.Tables" Version="3.0.0-beta.4" />
+  </ItemGroup>
+
 </Project>

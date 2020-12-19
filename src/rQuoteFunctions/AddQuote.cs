@@ -47,7 +47,8 @@ namespace TaleLearnCode.rQuote
 				{
 					PartitionKey = channelName,
 					RowKey = newQuoteId.ToString(),
-					Text = input.Text
+					Text = input.Text,
+					Author = input.Author
 				};
 
 				quoteId.MaxId = newQuoteId;
