@@ -40,6 +40,16 @@ namespace TaleLearnCode.rQuote
 			return GetQuote(channelName, randomId);
 		}
 
+		public static TableClient GetTableClient(string tableName)
+		{
+			return new TableClient(
+				new Uri(Environment.GetEnvironmentVariable("TableStorageUrl")),
+				tableName,
+				new TableSharedKeyCredential(
+					Environment.GetEnvironmentVariable("AccountName"),
+					Environment.GetEnvironmentVariable("AccountKey")));
+		}
+
 	}
 
 }

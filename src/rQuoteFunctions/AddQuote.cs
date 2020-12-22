@@ -1,5 +1,5 @@
-using Azure.Data.Tables;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 using System;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace TaleLearnCode.rQuote
 {
@@ -14,7 +15,7 @@ namespace TaleLearnCode.rQuote
 	public static class AddQuote
 	{
 		[FunctionName("AddQuote")]
-		public static async System.Threading.Tasks.Task<QuoteTableRow> RunAsync(
+		public static async Task<IActionResult> RunAsync(
 				[HttpTrigger(AuthorizationLevel.Function, "post", Route = "AddQuote/{channelName}")] HttpRequest request,
 				[Blob("quoteids/{channelName}", FileAccess.Read, Connection = "TableStorageKey")] Stream readQuoteId,
 				[Blob("quoteids/{channelName}", FileAccess.Write, Connection = "TableStorageKey")] Stream writeQuoteId,
@@ -22,34 +23,34 @@ namespace TaleLearnCode.rQuote
 				ILogger log)
 		{
 			QuoteTableRow quoteTableRow = null;
-				string requestBody = await new StreamReader(request.Body).ReadToEndAsync();
-				QuoteInput input = JsonConvert.DeserializeObject<QuoteInput>(requestBody);
-				if (input == null) throw new ArgumentNullException();
+			string requestBody = await new StreamReader(request.Body).ReadToEndAsync();
+			Quote input = JsonConvert.DeserializeObject<Quote>(requestBody);
+			if (input == null) throw new ArgumentNullException();
 
-				QuoteId quoteId = JsonConvert.DeserializeObject<QuoteId>(await new StreamReader(readQuoteId).ReadToEndAsync());
-				if (quoteId == null) quoteId = new QuoteId(channelName);
-				quoteId.MaxId = ++quoteId.MaxId;
+			QuoteId quoteId = JsonConvert.DeserializeObject<QuoteId>(await new StreamReader(readQuoteId).ReadToEndAsync());
+			if (quoteId == null) quoteId = new QuoteId(channelName);
+			quoteId.MaxId = ++quoteId.MaxId;
 
-				quoteTableRow = new QuoteTableRow()
-				{
-					PartitionKey = channelName,
-					RowKey = quoteId.MaxId.ToString(),
-					Text = input.Text,
-					Author = input.Author
-				};
+			quoteTableRow = new QuoteTableRow()
+			{
+				PartitionKey = channelName,
+				RowKey = quoteId.MaxId.ToString(),
+				Text = input.Text,
+				Author = input.Author
+			};
 
-				TableClient tableClient;
-				tableClient = new TableClient(new Uri(Environment.GetEnvironmentVariable("TableStorageUrl")),
-						Environment.GetEnvironmentVariable("QuoTableName"),
-						new TableSharedKeyCredential(Environment.GetEnvironmentVariable("AccountName"), Environment.GetEnvironmentVariable("AccountKey")));
-				tableClient.UpsertEntity(quoteTableRow);
+			//TableClient tableClient;
+			//tableClient = new TableClient(new Uri(Environment.GetEnvironmentVariable("TableStorageUrl")),
+			//		Environment.GetEnvironmentVariable("QuoTableName"),
+			//		new TableSharedKeyCredential(Environment.GetEnvironmentVariable("AccountName"), Environment.GetEnvironmentVariable("AccountKey")));
+			//tableClient.UpsertEntity(quoteTableRow);
+			Common.GetTableClient(Environment.GetEnvironmentVariable("QuoTableName")).UpsertEntity(quoteTableRow);
 
-				writeQuoteId.Write(Encoding.ASCII.GetBytes(JsonConvert.SerializeObject(quoteId)));
+			writeQuoteId.Write(Encoding.ASCII.GetBytes(JsonConvert.SerializeObject(quoteId)));
 
-			return quoteTableRow;
+			return new OkObjectResult(new Quote(quoteTableRow));
 
 		}
-
 
 	}
 

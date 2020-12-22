@@ -15,7 +15,7 @@ namespace TaleLearnCode.rQuote
 	{
 		[FunctionName("GetRandomQuote")]
 		public static async Task<IActionResult> Run(
-				[HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = "GetRandom/{channelName}")] HttpRequest request,
+				[HttpTrigger(AuthorizationLevel.Function, "get", Route = "GetRandom/{channelName}")] HttpRequest request,
 				[Blob("quoteids/{channelName}", FileAccess.Read, Connection = "TableStorageKey")] Stream readQuoteId,
 				string channelName,
 				ILogger log)
@@ -24,7 +24,7 @@ namespace TaleLearnCode.rQuote
 			QuoteId quoteId = JsonConvert.DeserializeObject<QuoteId>(await new StreamReader(readQuoteId).ReadToEndAsync());
 			int randomId = new Random().Next(1, quoteId.MaxId);
 
-			return new OkObjectResult(Common.GetQuote(channelName, randomId));
+			return new OkObjectResult(new Quote(Common.GetQuote(channelName, randomId)));
 
 		}
 
