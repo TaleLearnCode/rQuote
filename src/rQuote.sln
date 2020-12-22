@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.30803.129
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "rQuoteFunctions", "rQuoteFunctions\rQuoteFunctions.csproj", "{0D2D4D7D-C837-4860-B29A-233C0F3F1A23}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "rQuote", "rQuote\rQuote.csproj", "{CA8A2F2D-2F1C-4A18-8547-C4D9D87BFCDD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "rQuote", "rQuote\rQuote.csproj", "{CA8A2F2D-2F1C-4A18-8547-C4D9D87BFCDD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

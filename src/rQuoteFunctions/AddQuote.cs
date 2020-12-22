@@ -11,16 +11,6 @@ using System.Text;
 namespace TaleLearnCode.rQuote
 {
 
-	//public class Quote
-	//{
-	//	public string PartitionKey { get; set; }
-
-	//	public string RowKey { get; set; }
-
-	//	public string Text { get; set; }
-	//}
-
-
 	public static class AddQuote
 	{
 		[FunctionName("AddQuote")]
@@ -37,7 +27,6 @@ namespace TaleLearnCode.rQuote
 				string requestBody = await new StreamReader(request.Body).ReadToEndAsync();
 				QuoteInput input = JsonConvert.DeserializeObject<QuoteInput>(requestBody);
 				if (input == null) throw new ArgumentNullException();
-
 
 				QuoteId quoteId = JsonConvert.DeserializeObject<QuoteId>(await new StreamReader(readQuoteId).ReadToEndAsync());
 				if (quoteId == null) quoteId = new QuoteId(channelName);
