@@ -14,11 +14,7 @@ namespace TaleLearnCode.rQuote
 
 		public static QuoteTableRow GetQuote(string channelName, int quoteId)
 		{
-			TableClient tableClient;
-			tableClient = new TableClient(new Uri(Environment.GetEnvironmentVariable("TableStorageUrl")),
-					Environment.GetEnvironmentVariable("QuoTableName"),
-					new TableSharedKeyCredential(Environment.GetEnvironmentVariable("AccountName"), Environment.GetEnvironmentVariable("AccountKey")));
-			return tableClient.Query<QuoteTableRow>(s => s.PartitionKey == channelName && s.RowKey == quoteId.ToString()).FirstOrDefault();
+			return GetTableClient(Environment.GetEnvironmentVariable("QuoteTableName")).Query<QuoteTableRow>(s => s.PartitionKey == channelName && s.RowKey == quoteId.ToString()).FirstOrDefault();
 		}
 
 		public static async System.Threading.Tasks.Task<QuoteTableRow> GetRandomQuoteAsync(string channelName)

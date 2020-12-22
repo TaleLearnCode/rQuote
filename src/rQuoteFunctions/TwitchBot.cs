@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using TwitchLib.Client;
 using TwitchLib.Client.Events;
 using TwitchLib.Client.Models;
@@ -23,11 +24,12 @@ namespace TaleLearnCode.rQuote
 
 		public void SendMessage(string message)
 		{
-			while (!_twitchClient.IsConnected)
-			{
-				// wait until we get connected - probably should add something so we do not wait too long
-			}
-			_twitchClient.SendMessage(_destinationChannel, message);
+			bool sendMessage = true;
+			Stopwatch stopwatch = Stopwatch.StartNew();
+			// Need to wait for the connection to be made; waiting for up to 5 seconds for that to happen
+			while (!_twitchClient.IsConnected && sendMessage)
+				if (stopwatch.ElapsedMilliseconds >= 5000) sendMessage = false;
+			if (sendMessage) _twitchClient.SendMessage(_destinationChannel, message);
 		}
 
 		private void TwitchClient_OnMessageSent(object sender, OnMessageSentArgs e)

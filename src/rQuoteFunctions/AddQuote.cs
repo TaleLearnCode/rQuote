@@ -39,11 +39,6 @@ namespace TaleLearnCode.rQuote
 				Author = input.Author
 			};
 
-			//TableClient tableClient;
-			//tableClient = new TableClient(new Uri(Environment.GetEnvironmentVariable("TableStorageUrl")),
-			//		Environment.GetEnvironmentVariable("QuoTableName"),
-			//		new TableSharedKeyCredential(Environment.GetEnvironmentVariable("AccountName"), Environment.GetEnvironmentVariable("AccountKey")));
-			//tableClient.UpsertEntity(quoteTableRow);
 			Common.GetTableClient(Environment.GetEnvironmentVariable("QuoTableName")).UpsertEntity(quoteTableRow);
 
 			writeQuoteId.Write(Encoding.ASCII.GetBytes(JsonConvert.SerializeObject(quoteId)));

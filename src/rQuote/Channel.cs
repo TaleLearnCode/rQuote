@@ -8,9 +8,7 @@ namespace TaleLearnCode.rQuote
 
 		public string ChannelName { get; set; }
 
-		public int OnlineRandomInterval { get; set; }
-
-		public int OfflineRandomInterval { get; set; }
+		public int MessageFrequency { get; set; }
 
 		public DateTime LastRandomMessage { get; set; }
 
@@ -20,8 +18,7 @@ namespace TaleLearnCode.rQuote
 			{
 				PartitionKey = "rQuote",
 				RowKey = ChannelName,
-				OnlineRandomInterval = OnlineRandomInterval,
-				OfflineRandomInterval = OfflineRandomInterval,
+				MessageFrequency = MessageFrequency,
 				LastRandomMessage = LastRandomMessage
 			};
 		}
