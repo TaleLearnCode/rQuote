@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 
 namespace TaleLearnCode.rQuote
 {
+
 	public static class GetRandomQuote
 	{
 		[FunctionName("GetRandomQuote")]
@@ -21,23 +22,9 @@ namespace TaleLearnCode.rQuote
 				string channelName,
 				ILogger log)
 		{
-			//log.LogInformation("C# HTTP trigger function processed a request.");
-
-			//string name = request.Query["name"];
-
-			//string requestBody = await new StreamReader(request.Body).ReadToEndAsync();
-			//dynamic data = JsonConvert.DeserializeObject(requestBody);
-			//name = name ?? data?.name;
-
-			//string responseMessage = string.IsNullOrEmpty(name)
-			//		? "This HTTP triggered function executed successfully. Pass a name in the query string or in the request body for a personalized response."
-			//		: $"Hello, {name}. This HTTP triggered function executed successfully.";
-
-			//return new OkObjectResult(responseMessage);
 
 			QuoteId quoteId = JsonConvert.DeserializeObject<QuoteId>(await new StreamReader(readQuoteId).ReadToEndAsync());
 			int randomId = new Random().Next(1, quoteId.MaxId);
-
 
 			TableClient tableClient;
 			tableClient = new TableClient(new Uri(Environment.GetEnvironmentVariable("TableStorageUrl")),
@@ -48,5 +35,7 @@ namespace TaleLearnCode.rQuote
 			return new OkObjectResult(quoteTableRow);
 
 		}
+
 	}
+
 }

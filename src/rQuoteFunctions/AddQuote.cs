@@ -1,3 +1,4 @@
+using Azure.Data.Tables;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
@@ -23,7 +24,6 @@ namespace TaleLearnCode.rQuote
 	public static class AddQuote
 	{
 		[FunctionName("AddQuote")]
-		[return: Table("QuoTable", Connection = "TableStorageKey")]
 		public static async System.Threading.Tasks.Task<QuoteTableRow> RunAsync(
 				[HttpTrigger(AuthorizationLevel.Function, "post", Route = "Add/{channelName}")] HttpRequest request,
 				[Blob("quoteids/{channelName}", FileAccess.Read, Connection = "TableStorageKey")] Stream readQuoteId,
@@ -40,18 +40,23 @@ namespace TaleLearnCode.rQuote
 
 
 				QuoteId quoteId = JsonConvert.DeserializeObject<QuoteId>(await new StreamReader(readQuoteId).ReadToEndAsync());
-				int newQuoteId = quoteId.MaxId += 1;
-				//int newQuoteId2 = ++quoteId.MaxId;
+				if (quoteId == null) quoteId = new QuoteId(channelName);
+				quoteId.MaxId = ++quoteId.MaxId;
 
 				quoteTableRow = new QuoteTableRow()
 				{
 					PartitionKey = channelName,
-					RowKey = newQuoteId.ToString(),
+					RowKey = quoteId.MaxId.ToString(),
 					Text = input.Text,
 					Author = input.Author
 				};
 
-				quoteId.MaxId = newQuoteId;
+				TableClient tableClient;
+				tableClient = new TableClient(new Uri(Environment.GetEnvironmentVariable("TableStorageUrl")),
+						Environment.GetEnvironmentVariable("QuoTableName"),
+						new TableSharedKeyCredential(Environment.GetEnvironmentVariable("AccountName"), Environment.GetEnvironmentVariable("AccountKey")));
+				tableClient.UpsertEntity(quoteTableRow);
+
 				writeQuoteId.Write(Encoding.ASCII.GetBytes(JsonConvert.SerializeObject(quoteId)));
 
 			}
