@@ -15,7 +15,7 @@ namespace TaleLearnCode.rQuote
 	{
 		[FunctionName("GetRandomQuote")]
 		public static async Task<IActionResult> Run(
-				[HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = "Random/{channelName}")] HttpRequest request,
+				[HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = "GetRandom/{channelName}")] HttpRequest request,
 				[Blob("quoteids/{channelName}", FileAccess.Read, Connection = "TableStorageKey")] Stream readQuoteId,
 				string channelName,
 				ILogger log)

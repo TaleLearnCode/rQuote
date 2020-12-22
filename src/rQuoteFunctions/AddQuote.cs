@@ -15,15 +15,13 @@ namespace TaleLearnCode.rQuote
 	{
 		[FunctionName("AddQuote")]
 		public static async System.Threading.Tasks.Task<QuoteTableRow> RunAsync(
-				[HttpTrigger(AuthorizationLevel.Function, "post", Route = "Add/{channelName}")] HttpRequest request,
+				[HttpTrigger(AuthorizationLevel.Function, "post", Route = "AddQuote/{channelName}")] HttpRequest request,
 				[Blob("quoteids/{channelName}", FileAccess.Read, Connection = "TableStorageKey")] Stream readQuoteId,
 				[Blob("quoteids/{channelName}", FileAccess.Write, Connection = "TableStorageKey")] Stream writeQuoteId,
 				string channelName,
 				ILogger log)
 		{
 			QuoteTableRow quoteTableRow = null;
-			try
-			{
 				string requestBody = await new StreamReader(request.Body).ReadToEndAsync();
 				QuoteInput input = JsonConvert.DeserializeObject<QuoteInput>(requestBody);
 				if (input == null) throw new ArgumentNullException();
@@ -47,12 +45,6 @@ namespace TaleLearnCode.rQuote
 				tableClient.UpsertEntity(quoteTableRow);
 
 				writeQuoteId.Write(Encoding.ASCII.GetBytes(JsonConvert.SerializeObject(quoteId)));
-
-			}
-			catch (Exception ex)
-			{
-				log.LogError(ex.Message);
-			}
 
 			return quoteTableRow;
 
