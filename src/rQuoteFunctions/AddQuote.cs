@@ -39,7 +39,7 @@ namespace TaleLearnCode.rQuote
 				Author = input.Author
 			};
 
-			Common.GetTableClient(Environment.GetEnvironmentVariable("QuoTableName")).UpsertEntity(quoteTableRow);
+			Common.GetTableClient(Environment.GetEnvironmentVariable("QuoteTableName")).UpsertEntity(quoteTableRow);
 
 			writeQuoteId.Write(Encoding.ASCII.GetBytes(JsonConvert.SerializeObject(quoteId)));
 

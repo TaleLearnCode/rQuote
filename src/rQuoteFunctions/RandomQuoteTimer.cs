@@ -25,20 +25,13 @@ namespace TaleLearnCode.rQuote
 				}
 			}
 
-
-
-			//TwitchBot twitchBot = new TwitchBot("TaleLearnCode");
-			//QuoteTableRow quoteTableRow = await Common.GetRandomQuoteAsync("TaleLearnCode");
-			//string message = $"{quoteTableRow.Text} — {quoteTableRow.Author}";
-			//twitchBot.SendMessage(message);
-			//log.LogInformation($"Quote sent to {"TaleLearnCode"}: {message}");
 		}
 
 		private static async Task SendRandomQuoteAsync(string channelName, ILogger log)
 		{
 			TwitchBot twitchBot = new TwitchBot(channelName);
 			QuoteTableRow quoteTableRow = await Common.GetRandomQuoteAsync(channelName);
-			string message = $"{quoteTableRow.Text} — {quoteTableRow.Author}";
+			string message = $"\"{quoteTableRow.Text}\" — {quoteTableRow.Author}";
 			twitchBot.SendMessage(message);
 			log.LogInformation($"Quote sent to {channelName}: {message}");
 
